@@ -2,27 +2,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  weight: number;
-  image: string;
-}
+import { useCart } from "@/contexts/CartContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
+import { Product } from "@/data/products";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
 }
 
-export const ProductCard = ({
-  product,
-  isFavorite,
-  onToggleFavorite,
-}: ProductCardProps) => {
+export const ProductCard = ({ product }: ProductCardProps) => {
+  const { addToCart } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(product.id);
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.success(`${product.name} добавлен в корзину`);
+  };
+
   return (
     <Card className="group overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 bg-gradient-card border-0">
       <div className="relative aspect-square overflow-hidden">
@@ -32,13 +30,13 @@ export const ProductCard = ({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <button
-          onClick={onToggleFavorite}
+          onClick={() => toggleFavorite(product.id)}
           className="absolute top-3 right-3 p-2 rounded-full bg-card/90 backdrop-blur-sm hover:bg-card transition-colors duration-200"
         >
           <Heart
             className={cn(
               "w-5 h-5 transition-all duration-200",
-              isFavorite
+              favorite
                 ? "fill-favorite text-favorite"
                 : "text-foreground hover:text-favorite"
             )}
@@ -63,7 +61,10 @@ export const ProductCard = ({
           </span>
         </div>
 
-        <Button className="w-full bg-gradient-hero hover:opacity-90 transition-opacity">
+        <Button 
+          onClick={handleAddToCart}
+          className="w-full bg-gradient-hero hover:opacity-90 transition-opacity"
+        >
           <Plus className="w-4 h-4 mr-2" />
           В корзину
         </Button>
