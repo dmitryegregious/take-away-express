@@ -2,13 +2,28 @@ import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/contexts/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
+  const { items, updateQuantity, removeFromCart, totalPrice, isLoading } = useCart();
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <Header />
+        <main className="container mx-auto px-4 py-6 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </main>
+        <BottomNav />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -47,50 +62,53 @@ const Cart = () => {
               <CardContent className="p-4">
                 <div className="flex gap-4">
                   <img
-                    src={item.image}
+                    src={item.image || "/placeholder.svg"}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-lg"
                   />
                   
                   <div className="flex-1 space-y-2">
-                    <div className="flex justify-between">
-                      <h3 className="font-semibold text-foreground">
-                        {item.name}
-                      </h3>
-                      <button
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-semibold text-foreground">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {item.weight}{typeof item.weight === 'number' ? 'г' : ''}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => removeFromCart(item.productId)}
-                        className="text-destructive hover:text-destructive/80"
+                        className="text-destructive hover:text-destructive/90"
                       >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">
-                      {item.weight}г
-                    </p>
-
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
                         <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-8 w-8"
+                          variant="ghost"
+                          size="sm"
                           onClick={() =>
                             updateQuantity(item.productId, item.quantity - 1)
                           }
+                          className="h-8 w-8 p-0"
                         >
                           <Minus className="w-4 h-4" />
                         </Button>
-                        <span className="w-8 text-center font-semibold">
+                        <span className="w-8 text-center font-medium">
                           {item.quantity}
                         </span>
                         <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-8 w-8"
+                          variant="ghost"
+                          size="sm"
                           onClick={() =>
                             updateQuantity(item.productId, item.quantity + 1)
                           }
+                          className="h-8 w-8 p-0"
                         >
                           <Plus className="w-4 h-4" />
                         </Button>
@@ -107,18 +125,20 @@ const Cart = () => {
           ))}
         </div>
 
-        <Card className="bg-gradient-card">
-          <CardContent className="p-6 space-y-4">
-            <div className="flex justify-between items-center text-lg">
-              <span className="text-muted-foreground">Итого:</span>
-              <span className="font-bold text-2xl text-foreground">
-                {totalPrice}₽
-              </span>
+        <Card className="sticky bottom-20 shadow-lg bg-gradient-card border-0">
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-lg">
+                <span className="text-muted-foreground">Итого:</span>
+                <span className="font-bold text-2xl text-foreground">
+                  {totalPrice}₽
+                </span>
+              </div>
+              
+              <Button className="w-full bg-gradient-hero text-lg py-6">
+                Оформить заказ
+              </Button>
             </div>
-            
-            <Button className="w-full bg-gradient-hero text-lg h-12">
-              Оформить заказ
-            </Button>
           </CardContent>
         </Card>
       </main>

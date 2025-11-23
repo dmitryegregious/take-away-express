@@ -4,7 +4,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 interface Category {
   id: string;
   name: string;
-  image: string;
+  description?: string;
+  image?: string;
+  image_url?: string;
 }
 
 interface CategoryFilterProps {

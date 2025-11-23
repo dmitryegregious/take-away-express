@@ -3,9 +3,11 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  weight: number;
-  image: string;
-  category: string;
+  weight: number | string;
+  image?: string;
+  image_url?: string;
+  category?: string;
+  category_id?: string;
 }
 
 export const products: Product[] = [
