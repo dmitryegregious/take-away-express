@@ -25,7 +25,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     <Card className="group overflow-hidden hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 bg-gradient-card border-0">
       <div className="relative aspect-square overflow-hidden">
         <img
-          src={product.image}
+          src={product.image_url || product.image || "/placeholder.svg"}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -55,7 +55,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>{product.weight}г</span>
+          <span>{product.weight}{typeof product.weight === 'number' ? 'г' : ''}</span>
           <span className="font-bold text-xl text-foreground">
             {product.price}₽
           </span>
